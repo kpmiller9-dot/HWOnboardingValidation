@@ -298,7 +298,7 @@ async function runValidation() {
 
     setUploadStatus(`<div class="card c-info"><div class="card-title"><span class="spin">↻</span>Running validation…</div><div class="card-sub">Checking ${F.ob.name} against the hardware export</div></div>`)
 
-    const { data: res, error: fErr } = await sb.functions.invoke('validate-batch', {
+    const { data: res, error: fErr } = await sb.functions.invoke('validate_batch', {
       body: { batch_id: batch.id }
     })
     if (fErr) throw new Error('Edge Function error: ' + fErr.message)
