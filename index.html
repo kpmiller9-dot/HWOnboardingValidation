@@ -24,7 +24,7 @@
     /* Panels */
     .panel{display:none}.panel.active{display:block}
     .inner{max-width:680px;margin:0 auto;padding:28px 20px}
-    .inner-wide{max-width:1100px;margin:0 auto;padding:24px 20px}
+    .inner-wide{padding:24px 40px}
     h2{font-size:16px;font-weight:600;margin-bottom:4px}
     .sub{font-size:13px;color:#64748B;margin-bottom:24px}
 
@@ -134,6 +134,9 @@
     .btn-sm{padding:5px 12px;font-size:13px;border-radius:6px;border:0.5px solid #E2E8F0;background:#fff;color:#64748B;cursor:pointer}
     .btn-sm:hover{background:#F8FAFC}
 
+    .ip-field{display:flex;align-items:center;gap:5px}
+    .copy-btn{padding:2px 4px;border:none;background:none;cursor:pointer;color:#CBD5E1;border-radius:3px;flex-shrink:0;line-height:1}
+    .copy-btn:hover{color:#64748B;background:#F1F5F9}
     @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
     .spin{display:inline-block;animation:spin 1s linear infinite;margin-right:6px}
   </style>
@@ -224,8 +227,8 @@
 // ─────────────────────────────────────────────────────────────────
 //  CONFIG
 // ─────────────────────────────────────────────────────────────────
-const SUPABASE_URL      = 'https://kkqzzwwqbduejbluwrol.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrcXp6d3dxYmR1ZWpibHV3cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NTg2NDcsImV4cCI6MjA5NzIzNDY0N30.ABBBZ463WijmzfNFLVOxz7bZ9OGhtpPZjFbPEsbGe6Q'
+const SUPABASE_URL      = 'https://YOUR-PROJECT-REF.supabase.co'
+const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'
 // ─────────────────────────────────────────────────────────────────
 
 const { createClient } = supabase
@@ -348,7 +351,15 @@ function setFilter(key,val) {
 }
 
 function renderQueue() {
-  const visible=UNITS.filter(u=>{
+  // Sort: errors first, warnings second, good last. Secondary: customer_site alpha.
+  const ORDER = { error: 0, warning: 1, good: 2 }
+  const sorted = [...UNITS].sort((a, b) => {
+    const sa = ORDER[getUnitStatus(a)] ?? 3
+    const sb = ORDER[getUnitStatus(b)] ?? 3
+    if (sa !== sb) return sa - sb
+    return (a.customer_site || '').localeCompare(b.customer_site || '')
+  })
+  const visible=sorted.filter(u=>{
     const st=getUnitStatus(u)
     if(qFilter.status!=='all' && st!==qFilter.status) return false
     if(qFilter.model!=='all' && u.model!==qFilter.model) return false
@@ -398,7 +409,7 @@ function renderUnit(unit) {
       <div class="unit-color ${bcCls}"></div>
       <div class="unit-fields">
         <div class="field"><div class="field-lbl">Model</div><div class="field-val">${unit.model||'—'}</div></div>
-        <div class="field"><div class="field-lbl">IP Address</div><div class="field-val">${unit.ip_address||'—'}</div></div>
+        <div class="field"><div class="field-lbl">IP Address</div><div class="field-val ip-field"><span>${unit.ip_address||'—'}</span>${unit.ip_address?`<button class="copy-btn" onclick="event.stopPropagation();copyIP('${unit.ip_address}',this)" title="Copy IP"><i class="ti ti-copy" style="font-size:12px" aria-hidden="true"></i></button>`:''}</div></div>
         <div class="field"><div class="field-lbl">Customer</div><div class="field-val">${unit.customer||'—'}</div></div>
         <div class="field"><div class="field-lbl">Customer Site</div><div class="field-val">${unit.customer_site||'—'}</div></div>
         <div class="field"><div class="field-lbl">Power</div><div class="field-val">${unit.power||'—'}</div></div>
@@ -428,6 +439,20 @@ function renderFinding(f) {
 function toggleUnit(id) {
   if(expanded.has(id)) expanded.delete(id); else expanded.add(id)
   renderQueue()
+}
+
+async function copyIP(ip, btn) {
+  try {
+    await navigator.clipboard.writeText(ip)
+    const orig = btn.innerHTML
+    btn.innerHTML = '<i class="ti ti-check" style="font-size:12px;color:#10B981" aria-hidden="true"></i>'
+    setTimeout(() => { btn.innerHTML = orig }, 1500)
+  } catch(e) {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea')
+    ta.value = ip; document.body.appendChild(ta); ta.select()
+    document.execCommand('copy'); document.body.removeChild(ta)
+  }
 }
 
 async function setFindingStatus(id,newStatus) {
