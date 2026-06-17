@@ -10,25 +10,25 @@
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#F8FAFC;color:#0F172A;min-height:100vh}
 
-    /* ── Header + Tabs ─────────────────────────────────────── */
+    /* Header + tabs */
     .header{background:#fff;border-bottom:1px solid #E2E8F0;padding:0 24px}
     .header-top{display:flex;align-items:center;justify-content:space-between;padding:16px 0 0}
     .header-title{font-size:15px;font-weight:600}
     .header-sub{font-size:12px;color:#64748B;margin-top:2px}
-    .tabs{display:flex;gap:0;margin-top:12px}
+    .tabs{display:flex;margin-top:12px}
     .tab{padding:10px 18px;font-size:13px;font-weight:500;color:#64748B;cursor:pointer;
          border-bottom:2px solid transparent;transition:all 0.15s;user-select:none}
     .tab:hover{color:#0F172A}
     .tab.active{color:#0F172A;border-bottom-color:#0F172A}
 
-    /* ── Panels ────────────────────────────────────────────── */
+    /* Panels */
     .panel{display:none}.panel.active{display:block}
     .inner{max-width:680px;margin:0 auto;padding:28px 20px}
-    .inner-wide{max-width:1060px;margin:0 auto;padding:28px 20px}
+    .inner-wide{max-width:1100px;margin:0 auto;padding:24px 20px}
     h2{font-size:16px;font-weight:600;margin-bottom:4px}
     .sub{font-size:13px;color:#64748B;margin-bottom:24px}
 
-    /* ── Upload zones ──────────────────────────────────────── */
+    /* Upload zones */
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
     .zone{border:1.5px dashed #CBD5E1;border-radius:12px;padding:24px 16px;text-align:center;
           background:#F8FAFC;cursor:pointer;transition:all 0.15s;user-select:none}
@@ -41,14 +41,12 @@
     .zone-hint{font-size:11px;color:#94A3B8}
     .zone-fname{font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
     .zone-fsize{font-size:11px;color:#94A3B8}
-
     #run-btn{width:100%;padding:10px;font-size:13px;font-weight:500;border-radius:8px;
-             border:0.5px solid #E2E8F0;background:#fff;color:#94A3B8;
-             cursor:not-allowed;margin-bottom:14px;transition:all 0.15s}
+             border:0.5px solid #E2E8F0;background:#fff;color:#94A3B8;cursor:not-allowed;margin-bottom:14px;transition:all 0.15s}
     #run-btn.ready{border-color:#A7F3D0;background:#F0FDF4;color:#059669;cursor:pointer}
     #run-btn.ready:hover{opacity:.85}
 
-    /* ── Status cards ──────────────────────────────────────── */
+    /* Status cards */
     .card{border:0.5px solid #E2E8F0;border-radius:12px;padding:16px;background:#fff}
     .card.c-info{border-color:#BFDBFE}.card.c-ok{border-color:#A7F3D0}.card.c-err{border-color:#FECACA}
     .card-title{font-size:13px;font-weight:500;margin-bottom:2px}
@@ -57,20 +55,19 @@
     .stat-sm{background:#F8FAFC;border-radius:8px;padding:10px 12px}
     .stat-sm .sl{font-size:11px;color:#64748B;margin-bottom:3px}
     .stat-sm .sv{font-size:20px;font-weight:500}
-
     .btn-ok{display:inline-block;padding:8px 16px;font-size:13px;font-weight:500;border-radius:8px;
-            text-decoration:none;border:0.5px solid #A7F3D0;background:#F0FDF4;color:#059669;cursor:pointer}
+            border:0.5px solid #A7F3D0;background:#F0FDF4;color:#059669;cursor:pointer}
     .btn-ghost{padding:8px 12px;font-size:12px;border-radius:8px;border:0.5px solid #E2E8F0;
                background:none;color:#64748B;cursor:pointer;margin-left:8px}
 
-    /* ── Queue stats ───────────────────────────────────────── */
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
-    .stat-card{background:#fff;border:0.5px solid #E2E8F0;border-radius:10px;padding:12px 14px}
-    .stat-card .sl{font-size:12px;color:#64748B;margin-bottom:4px}
-    .stat-card .sv{font-size:22px;font-weight:500}
+    /* Queue stats */
+    .q-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+    .q-stat{background:#fff;border:0.5px solid #E2E8F0;border-radius:10px;padding:12px 14px}
+    .q-stat .ql{font-size:12px;color:#64748B;margin-bottom:4px}
+    .q-stat .qv{font-size:22px;font-weight:500}
 
-    /* ── Queue filters ─────────────────────────────────────── */
-    .filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+    /* Queue filters */
+    .filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
     .fb{padding:5px 12px;font-size:13px;border-radius:6px;border:0.5px solid #E2E8F0;
         background:#fff;color:#64748B;cursor:pointer;transition:all 0.1s}
     .fb.on{border-color:#BFDBFE;background:#EFF6FF;color:#1D4ED8;font-weight:500}
@@ -78,32 +75,56 @@
     .fsep{width:0.5px;height:20px;background:#E2E8F0}
     select{font-size:13px;padding:5px 8px;border-radius:6px;border:0.5px solid #E2E8F0;background:#fff;color:#0F172A}
 
-    /* ── Queue table ───────────────────────────────────────── */
-    .tcard{background:#fff;border:0.5px solid #E2E8F0;border-radius:12px;overflow:hidden}
-    .thead{display:grid;grid-template-columns:76px 56px minmax(0,150px) minmax(0,180px) minmax(0,1fr) 80px;
-           padding:7px 14px 7px 18px;background:#F8FAFC;border-bottom:0.5px solid #E2E8F0}
-    .th{font-size:11px;font-weight:500;color:#94A3B8;letter-spacing:.03em}
-    .trow{display:grid;grid-template-columns:76px 56px minmax(0,150px) minmax(0,180px) minmax(0,1fr) 80px;
-          padding:10px 14px 10px 16px;align-items:center;border-bottom:0.5px solid #F1F5F9;transition:background 0.2s}
-    .trow:last-child{border-bottom:none}
-    .trow:hover{background:#FAFAFA}
-    .trow.resolving{background:#F0FDF4}
-    .trow.is-resolved{opacity:.5}
-    .sev{font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;white-space:nowrap}
-    .sev-error{background:#FEF2F2;color:#991B1B}
-    .sev-warning{background:#FFFBEB;color:#92400E}
-    .rule{font-size:11px;font-weight:500;color:#475569;font-family:monospace}
-    .u-name{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .u-id{font-size:11px;color:#94A3B8;margin-top:1px}
-    .c-ob{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .c-db{font-size:11px;color:#94A3B8;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .i-msg{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .i-diff{font-size:11px;color:#94A3B8;margin-top:2px;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .btn-res{font-size:12px;font-weight:500;padding:4px 10px;border-radius:6px;
+    /* Unit list */
+    .unit-list{background:#fff;border:0.5px solid #E2E8F0;border-radius:12px;overflow:hidden}
+
+    /* Unit card */
+    .unit-main{display:flex;align-items:center;gap:12px;padding:12px 16px 12px 0;
+               cursor:pointer;transition:background 0.15s}
+    .unit-main:hover{background:#FAFAFA}
+    .unit-color{width:3px;min-width:3px;height:100%;align-self:stretch;border-radius:0}
+    .unit-fields{display:flex;flex:1;gap:0;min-width:0}
+    .field{flex:1;min-width:80px;padding:0 12px}
+    .field-lbl{font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+    .field-val{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .unit-right{display:flex;align-items:center;gap:8px;padding-right:14px;flex-shrink:0}
+    .chevron{font-size:16px;color:#94A3B8;transition:transform 0.2s;display:inline-block}
+    .chevron.open{transform:rotate(90deg)}
+
+    /* Status badges */
+    .badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap}
+    .badge-error{background:#FEF2F2;color:#991B1B}
+    .badge-warning{background:#FFFBEB;color:#92400E}
+    .badge-good{background:#F0FDF4;color:#166534}
+
+    /* Findings section (expanded) */
+    .unit-findings{border-top:0.5px solid #F1F5F9;background:#F8FAFC}
+    .finding-item{display:flex;align-items:center;gap:10px;padding:9px 14px 9px 28px;
+                  border-bottom:0.5px solid #F1F5F9}
+    .finding-item:last-child{border-bottom:none}
+    .finding-item.is-resolved{opacity:.5}
+    .f-sev{font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+    .f-sev-error{background:#FEF2F2;color:#991B1B}
+    .f-sev-warn{background:#FFFBEB;color:#92400E}
+    .f-rule{font-size:11px;font-weight:500;font-family:monospace;color:#475569;flex-shrink:0;width:48px}
+    .f-msg{font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .f-diff{font-size:11px;color:#94A3B8;font-family:monospace;flex-shrink:0;margin-left:4px}
+    .btn-res{font-size:12px;font-weight:500;padding:3px 10px;border-radius:5px;flex-shrink:0;
              border:0.5px solid #A7F3D0;background:#F0FDF4;color:#059669;cursor:pointer}
     .btn-res:hover{opacity:.8}
-    .btn-reo{font-size:12px;padding:4px 8px;border-radius:6px;border:none;background:none;color:#94A3B8;cursor:pointer}
+    .btn-reo{font-size:12px;padding:3px 8px;border-radius:5px;flex-shrink:0;
+             border:none;background:none;color:#94A3B8;cursor:pointer}
     .btn-reo:hover{color:#64748B}
+
+    /* Unit border color strip */
+    .bc-error{background:#EF4444}
+    .bc-warning{background:#F59E0B}
+    .bc-good{background:#10B981}
+
+    /* Unit row separator */
+    .unit-card:not(:last-child) .unit-main{border-bottom:0.5px solid #F1F5F9}
+    .unit-card:not(:last-child) .unit-findings{border-bottom:0.5px solid #E2E8F0}
+
     .empty{padding:48px 20px;text-align:center}
     .empty i{font-size:28px;color:#10B981;display:block;margin-bottom:8px}
     .empty-t{font-size:14px;font-weight:500;margin-bottom:4px}
@@ -119,7 +140,6 @@
 </head>
 <body>
 
-<!-- ── Header ────────────────────────────────────────────────── -->
 <div class="header">
   <div class="header-top">
     <div>
@@ -140,17 +160,13 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!-- UPLOAD PANEL                                               -->
-<!-- ══════════════════════════════════════════════════════════ -->
+<!-- ══ UPLOAD PANEL ══════════════════════════════════════════════════ -->
 <div id="panel-upload" class="panel active">
   <div class="inner">
     <h2>Weekly upload</h2>
     <p class="sub">Select both files to run the validation check</p>
-
     <div class="grid-2">
-      <div id="z-ob" class="zone"
-           onclick="document.getElementById('inp-ob').click()"
+      <div id="z-ob" class="zone" onclick="document.getElementById('inp-ob').click()"
            ondragover="dov(event,'ob')" ondragleave="dlv('ob')" ondrop="drp(event,'ob')">
         <div id="inner-ob">
           <i class="ti ti-file-spreadsheet" aria-hidden="true"></i>
@@ -159,9 +175,7 @@
         </div>
       </div>
       <input type="file" id="inp-ob" accept=".xlsx,.xls" style="display:none" onchange="pick('ob',this.files[0])">
-
-      <div id="z-hw" class="zone"
-           onclick="document.getElementById('inp-hw').click()"
+      <div id="z-hw" class="zone" onclick="document.getElementById('inp-hw').click()"
            ondragover="dov(event,'hw')" ondragleave="dlv('hw')" ondrop="drp(event,'hw')">
         <div id="inner-hw">
           <i class="ti ti-file-text" aria-hidden="true"></i>
@@ -171,75 +185,54 @@
       </div>
       <input type="file" id="inp-hw" accept=".csv" style="display:none" onchange="pick('hw',this.files[0])">
     </div>
-
     <button id="run-btn" disabled onclick="runValidation()">Run validation</button>
     <div id="upload-status"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!-- QUEUE PANEL                                                -->
-<!-- ══════════════════════════════════════════════════════════ -->
+<!-- ══ QUEUE PANEL ════════════════════════════════════════════════════ -->
 <div id="panel-queue" class="panel">
   <div class="inner-wide">
 
-    <div class="stats">
-      <div class="stat-card"><div class="sl">Open errors</div><div class="sv" id="s-err" style="color:#EF4444">—</div></div>
-      <div class="stat-card"><div class="sl">Open warnings</div><div class="sv" id="s-warn" style="color:#F59E0B">—</div></div>
-      <div class="stat-card"><div class="sl">Resolved</div><div class="sv" id="s-res" style="color:#10B981">—</div></div>
+    <div class="q-stats">
+      <div class="q-stat"><div class="ql">Total units</div><div class="qv" id="s-total">—</div></div>
+      <div class="q-stat"><div class="ql">Errors</div><div class="qv" id="s-err" style="color:#EF4444">—</div></div>
+      <div class="q-stat"><div class="ql">Warnings</div><div class="qv" id="s-warn" style="color:#F59E0B">—</div></div>
+      <div class="q-stat"><div class="ql">Good</div><div class="qv" id="s-good" style="color:#10B981">—</div></div>
     </div>
 
     <div class="filters">
-      <button class="fb on" id="f-open"     onclick="setFilter('status','open')">Open</button>
-      <button class="fb"    id="f-all"      onclick="setFilter('status','all')">All</button>
-      <button class="fb"    id="f-resolved" onclick="setFilter('status','resolved')">Resolved</button>
+      <button class="fb on" id="f-all"     onclick="setFilter('status','all')">All</button>
+      <button class="fb"    id="f-error"   onclick="setFilter('status','error')">Error</button>
+      <button class="fb"    id="f-warning" onclick="setFilter('status','warning')">Warning</button>
+      <button class="fb"    id="f-good"    onclick="setFilter('status','good')">Good</button>
       <div class="fsep"></div>
-      <select id="f-rule" onchange="setFilter('rule',this.value)">
-        <option value="all">All checks</option>
-      </select>
-      <select id="f-sev" onchange="setFilter('sev',this.value)">
-        <option value="all">All severities</option>
-        <option value="error">Errors only</option>
-        <option value="warning">Warnings only</option>
+      <select id="f-model" onchange="setFilter('model',this.value)">
+        <option value="all">All models</option>
       </select>
     </div>
 
-    <div class="tcard">
-      <div class="thead">
-        <span class="th">Severity</span>
-        <span class="th">Rule</span>
-        <span class="th">Unit</span>
-        <span class="th">Customer</span>
-        <span class="th">Issue</span>
-        <span class="th"></span>
-      </div>
-      <div id="tbody"><div class="loading">Loading findings…</div></div>
+    <div id="unit-list" class="unit-list">
+      <div class="loading">Loading…</div>
     </div>
     <div id="count-lbl" class="count-label"></div>
-
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!-- SCRIPT                                                     -->
-<!-- ══════════════════════════════════════════════════════════ -->
+<!-- ══ SCRIPT ════════════════════════════════════════════════════════ -->
 <script>
-// ─────────────────────────────────────────────────────────────
-//  CONFIG — replace with your Supabase project values
-//  URL:  Supabase dashboard → Settings → API → Project URL
-//  KEY:  Supabase dashboard → Settings → API → anon / public key
-// ─────────────────────────────────────────────────────────────
-const SUPABASE_URL      = 'https://kkqzzwwqbduejbluwrol.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrcXp6d3dxYmR1ZWpibHV3cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NTg2NDcsImV4cCI6MjA5NzIzNDY0N30.ABBBZ463WijmzfNFLVOxz7bZ9OGhtpPZjFbPEsbGe6Q'
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+//  CONFIG
+// ─────────────────────────────────────────────────────────────────
+const SUPABASE_URL      = 'https://YOUR-PROJECT-REF.supabase.co'
+const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'
+// ─────────────────────────────────────────────────────────────────
 
 const { createClient } = supabase
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-// ── Tab switching ─────────────────────────────────────────────
-
+// ── Tab switching ─────────────────────────────────────────────────
 let queueLoaded = false
-
 function switchTab(name) {
   ;['upload','queue'].forEach(t => {
     document.getElementById('panel-'+t).classList.toggle('active', t===name)
@@ -249,211 +242,204 @@ function switchTab(name) {
   if (name==='queue' && !queueLoaded) loadQueue()
 }
 
-// ── Upload logic ──────────────────────────────────────────────
-
+// ── Upload ────────────────────────────────────────────────────────
 const F = { ob: null, hw: null }
-const fmt = b => b<1024 ? b+' B' : b<1048576 ? Math.round(b/1024)+' KB' : (b/1048576).toFixed(1)+' MB'
-
+const fmt = b => b<1024?b+' B':b<1048576?Math.round(b/1024)+' KB':(b/1048576).toFixed(1)+' MB'
 function dov(e,t){ e.preventDefault(); document.getElementById('z-'+t).classList.add('over') }
 function dlv(t){ document.getElementById('z-'+t).classList.remove('over') }
 function drp(e,t){ e.preventDefault(); dlv(t); const f=e.dataTransfer.files[0]; if(f) pick(t,f) }
-
-function pick(t, file) {
-  if (!file) return
-  F[t] = file
-  document.getElementById('z-'+t).classList.remove('over')
-  document.getElementById('z-'+t).classList.add('done')
-  document.getElementById('inner-'+t).innerHTML = `
-    <i class="ti ti-check" aria-hidden="true"></i>
-    <div class="zone-fname">${file.name}</div>
-    <div class="zone-fsize">${fmt(file.size)}</div>
-  `
-  if (F.ob && F.hw) {
-    const b = document.getElementById('run-btn')
-    b.disabled = false; b.classList.add('ready')
-  }
+function pick(t,file) {
+  if (!file) return; F[t]=file
+  document.getElementById('z-'+t).classList.remove('over'); document.getElementById('z-'+t).classList.add('done')
+  document.getElementById('inner-'+t).innerHTML=`<i class="ti ti-check" aria-hidden="true"></i><div class="zone-fname">${file.name}</div><div class="zone-fsize">${fmt(file.size)}</div>`
+  if (F.ob && F.hw) { const b=document.getElementById('run-btn'); b.disabled=false; b.classList.add('ready') }
 }
-
-function setUploadStatus(html) { document.getElementById('upload-status').innerHTML = html }
+function setUS(html){ document.getElementById('upload-status').innerHTML=html }
 
 async function runValidation() {
-  const btn = document.getElementById('run-btn')
-  btn.disabled = true; btn.classList.remove('ready')
-
+  const btn=document.getElementById('run-btn'); btn.disabled=true; btn.classList.remove('ready')
   try {
-    btn.textContent = 'Creating batch…'
-
-    const { data: batch, error: bErr } = await sb
-      .from('upload_batches').insert({ status: 'pending' }).select().single()
-    if (bErr) throw new Error('Could not create batch: ' + bErr.message)
-
-    setUploadStatus(`<div class="card"><div class="card-title"><span class="spin">↻</span>Uploading files…</div><div class="card-sub">Writing to Supabase Storage</div></div>`)
-
-    const [r1, r2] = await Promise.all([
-      sb.storage.from('validation-uploads').upload(`${batch.id}/onboarding.xlsx`, F.ob),
-      sb.storage.from('validation-uploads').upload(`${batch.id}/hardware_export.csv`, F.hw),
+    btn.textContent='Creating batch…'
+    const {data:batch,error:bErr}=await sb.from('upload_batches').insert({status:'pending'}).select().single()
+    if(bErr) throw new Error('Could not create batch: '+bErr.message)
+    setUS(`<div class="card"><div class="card-title"><span class="spin">↻</span>Uploading files…</div><div class="card-sub">Writing to Supabase Storage</div></div>`)
+    const [r1,r2]=await Promise.all([
+      sb.storage.from('validation-uploads').upload(`${batch.id}/onboarding.xlsx`,F.ob),
+      sb.storage.from('validation-uploads').upload(`${batch.id}/hardware_export.csv`,F.hw),
     ])
-    if (r1.error) throw new Error('Onboarding upload failed: ' + r1.error.message)
-    if (r2.error) throw new Error('Hardware export upload failed: ' + r2.error.message)
-
-    setUploadStatus(`<div class="card c-info"><div class="card-title"><span class="spin">↻</span>Running validation…</div><div class="card-sub">Checking ${F.ob.name} against the hardware export</div></div>`)
-
-    const { data: res, error: fErr } = await sb.functions.invoke('validate_batch', {
-      body: { batch_id: batch.id }
-    })
-    if (fErr) throw new Error('Edge Function error: ' + fErr.message)
-    if (!res?.success) throw new Error(res?.error || 'Validation returned an error')
-
-    setUploadStatus(`
-      <div class="card c-ok">
-        <div class="card-title" style="margin-bottom:12px">✓ Validation complete</div>
-        <div class="stat-row">
-          <div class="stat-sm"><div class="sl">Errors</div><div class="sv" style="color:#EF4444">${res.errors}</div></div>
-          <div class="stat-sm"><div class="sl">Warnings</div><div class="sv" style="color:#F59E0B">${res.warnings}</div></div>
-          <div class="stat-sm"><div class="sl">Total</div><div class="sv">${res.findings}</div></div>
-        </div>
-        <button class="btn-ok" onclick="switchTab('queue');loadQueue()">View queue →</button>
-        <button class="btn-ghost" onclick="resetUpload()">Upload another</button>
-      </div>
-    `)
-    queueLoaded = false
-
-  } catch (err) {
-    setUploadStatus(`
-      <div class="card c-err">
-        <div class="card-title" style="color:#EF4444;margin-bottom:6px">Validation failed</div>
-        <div class="card-sub" style="font-family:monospace;margin-bottom:12px">${err.message}</div>
-        <button class="btn-ghost" onclick="resetUpload()">Try again</button>
-      </div>
-    `)
-    btn.disabled = false; btn.classList.add('ready')
+    if(r1.error) throw new Error('Onboarding upload failed: '+r1.error.message)
+    if(r2.error) throw new Error('Hardware export upload failed: '+r2.error.message)
+    setUS(`<div class="card c-info"><div class="card-title"><span class="spin">↻</span>Running validation…</div><div class="card-sub">Checking ${F.ob.name} against the hardware export</div></div>`)
+    const {data:res,error:fErr}=await sb.functions.invoke('validate_batch',{body:{batch_id:batch.id}})
+    if(fErr) throw new Error('Edge Function error: '+fErr.message)
+    if(!res?.success) throw new Error(res?.error||'Validation returned an error')
+    setUS(`<div class="card c-ok"><div class="card-title" style="margin-bottom:12px">✓ Validation complete</div><div class="stat-row"><div class="stat-sm"><div class="sl">Units</div><div class="sv">${res.units}</div></div><div class="stat-sm"><div class="sl">Errors</div><div class="sv" style="color:#EF4444">${res.errors}</div></div><div class="stat-sm"><div class="sl">Warnings</div><div class="sv" style="color:#F59E0B">${res.warnings}</div></div></div><button class="btn-ok" onclick="switchTab('queue');loadQueue()">View queue →</button><button class="btn-ghost" onclick="resetUpload()">Upload another</button></div>`)
+    queueLoaded=false
+  } catch(err) {
+    setUS(`<div class="card c-err"><div class="card-title" style="color:#EF4444;margin-bottom:6px">Validation failed</div><div class="card-sub" style="font-family:monospace;margin-bottom:12px">${err.message}</div><button class="btn-ghost" onclick="resetUpload()">Try again</button></div>`)
+    btn.disabled=false; btn.classList.add('ready')
   }
-
-  btn.textContent = 'Run validation'
+  btn.textContent='Run validation'
 }
 
 function resetUpload() {
-  F.ob = null; F.hw = null
-  ;['ob','hw'].forEach(t => {
-    const z = document.getElementById('z-'+t)
-    z.classList.remove('done','over')
-    const icon = t==='ob' ? 'ti-file-spreadsheet' : 'ti-file-text'
-    const label = t==='ob' ? 'Unit Onboarding' : 'Hardware Export'
-    const hint  = t==='ob' ? '.xlsx' : '.csv'
-    document.getElementById('inner-'+t).innerHTML = `
-      <i class="ti ${icon}" aria-hidden="true"></i>
-      <div class="zone-label">${label}</div>
-      <div class="zone-hint">${hint}</div>
-    `
+  F.ob=null; F.hw=null
+  ;['ob','hw'].forEach(t=>{
+    document.getElementById('z-'+t).classList.remove('done','over')
+    const icon=t==='ob'?'ti-file-spreadsheet':'ti-file-text'
+    const label=t==='ob'?'Unit Onboarding':'Hardware Export'
+    const hint=t==='ob'?'.xlsx':'.csv'
+    document.getElementById('inner-'+t).innerHTML=`<i class="ti ${icon}" aria-hidden="true"></i><div class="zone-label">${label}</div><div class="zone-hint">${hint}</div>`
   })
-  setUploadStatus('')
-  const btn = document.getElementById('run-btn')
-  btn.disabled = true; btn.classList.remove('ready'); btn.textContent = 'Run validation'
+  setUS(''); const btn=document.getElementById('run-btn'); btn.disabled=true; btn.classList.remove('ready'); btn.textContent='Run validation'
 }
 
-// ── Queue logic ───────────────────────────────────────────────
-
-let ALL = []
-let filters = { status: 'open', rule: 'all', sev: 'all' }
+// ── Queue ─────────────────────────────────────────────────────────
+let UNITS=[], FINDINGS=[], qFilter={status:'all',model:'all'}, expanded=new Set()
 
 async function loadQueue() {
-  document.getElementById('tbody').innerHTML = '<div class="loading">Loading findings…</div>'
-  queueLoaded = true
+  document.getElementById('unit-list').innerHTML='<div class="loading">Loading…</div>'
+  queueLoaded=true
 
-  const { data, error } = await sb
-    .from('hw_findings')
-    .select('*')
-    .order('severity')
-    .order('created_at', { ascending: false })
-
-  if (error) {
-    document.getElementById('tbody').innerHTML = `<div class="loading" style="color:#EF4444">Failed to load: ${error.message}</div>`
+  // Get latest completed batch
+  const {data:batches}=await sb.from('upload_batches').select('id,run_date').eq('status','complete').order('created_at',{ascending:false}).limit(1)
+  if(!batches?.length){
+    document.getElementById('unit-list').innerHTML='<div class="empty"><i class="ti ti-inbox" aria-hidden="true"></i><div class="empty-t">No validation runs yet</div><div class="empty-s">Upload files to run the first validation</div></div>'
     return
   }
+  const batchId=batches[0].id, runDate=batches[0].run_date
+  const d=new Date(runDate+'T12:00:00')
+  document.getElementById('queue-date').textContent='Week of '+d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
 
-  ALL = data || []
+  const [{data:units},{data:findings}]=await Promise.all([
+    sb.from('onboarding_units').select('*').eq('batch_id',batchId).order('customer_site'),
+    sb.from('hw_findings').select('*').order('severity')
+  ])
+  UNITS=units||[]; FINDINGS=findings||[]
 
-  if (ALL.length > 0) {
-    const d = new Date(ALL[0].run_date + 'T12:00:00')
-    document.getElementById('queue-date').textContent = 'Week of ' + d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
-  } else {
-    document.getElementById('queue-date').textContent = 'No findings yet'
-  }
-
-  const rules = [...new Set(ALL.map(f => f.rule_id))].sort()
-  const sel = document.getElementById('f-rule')
-  sel.innerHTML = '<option value="all">All checks</option>'
-  rules.forEach(r => { const o=document.createElement('option'); o.value=r; o.textContent=r; sel.appendChild(o) })
+  // Populate model filter
+  const models=[...new Set(UNITS.map(u=>u.model))].sort()
+  const sel=document.getElementById('f-model')
+  sel.innerHTML='<option value="all">All models</option>'
+  models.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o)})
 
   renderQueue()
 }
 
-function setFilter(key, val) {
-  filters[key] = val
-  if (key==='status')
-    ;['open','all','resolved'].forEach(k => document.getElementById('f-'+k).classList.toggle('on', k===val))
+function getFindingsForUnit(unit) {
+  return FINDINGS.filter(f=>{
+    if(unit.ip_address && f.ip_address) return f.ip_address===unit.ip_address
+    if(unit.serial && f.serial) return f.serial===unit.serial
+    return false
+  })
+}
+
+function getUnitStatus(unit) {
+  const open=getFindingsForUnit(unit).filter(f=>f.status==='open')
+  if(open.some(f=>f.severity==='error')) return 'error'
+  if(open.some(f=>f.severity==='warning')) return 'warning'
+  return 'good'
+}
+
+function setFilter(key,val) {
+  qFilter[key]=val
+  if(key==='status') ['all','error','warning','good'].forEach(k=>document.getElementById('f-'+k).classList.toggle('on',k===val))
   renderQueue()
 }
 
 function renderQueue() {
-  const visible = ALL.filter(f => {
-    if (filters.status!=='all' && f.status!==filters.status) return false
-    if (filters.rule!=='all' && f.rule_id!==filters.rule) return false
-    if (filters.sev!=='all' && f.severity!==filters.sev) return false
+  const visible=UNITS.filter(u=>{
+    const st=getUnitStatus(u)
+    if(qFilter.status!=='all' && st!==qFilter.status) return false
+    if(qFilter.model!=='all' && u.model!==qFilter.model) return false
     return true
   })
 
-  document.getElementById('s-err').textContent  = ALL.filter(f=>f.status==='open'&&f.severity==='error').length
-  document.getElementById('s-warn').textContent = ALL.filter(f=>f.status==='open'&&f.severity==='warning').length
-  document.getElementById('s-res').textContent  = ALL.filter(f=>f.status==='resolved').length
+  // Stats
+  document.getElementById('s-total').textContent=UNITS.length
+  document.getElementById('s-err').textContent=UNITS.filter(u=>getUnitStatus(u)==='error').length
+  document.getElementById('s-warn').textContent=UNITS.filter(u=>getUnitStatus(u)==='warning').length
+  document.getElementById('s-good').textContent=UNITS.filter(u=>getUnitStatus(u)==='good').length
 
-  const tbody = document.getElementById('tbody')
-  const lbl   = document.getElementById('count-lbl')
+  const list=document.getElementById('unit-list')
+  const lbl=document.getElementById('count-lbl')
 
-  if (!visible.length) {
-    tbody.innerHTML = `<div class="empty"><i class="ti ti-check" aria-hidden="true"></i><div class="empty-t">Nothing to show</div><div class="empty-s">${filters.status==='open'?'All open exceptions have been resolved.':'No findings match the current filters.'}</div></div>`
-    lbl.textContent = ''
-    return
+  if(!visible.length){
+    list.innerHTML='<div class="empty"><i class="ti ti-check" aria-hidden="true"></i><div class="empty-t">No units match</div><div class="empty-s">Try changing the filter</div></div>'
+    lbl.textContent=''; return
   }
 
-  lbl.textContent = visible.length + ' finding' + (visible.length!==1?'s':'') + ' shown'
-
-  tbody.innerHTML = visible.map(f => {
-    const isRes = f.status==='resolved'
-    const sevCls = f.severity==='error' ? 'sev-error' : 'sev-warning'
-    const lb = isRes ? 'border-left:3px solid #E2E8F0' : f.severity==='error' ? 'border-left:3px solid #EF4444' : 'border-left:3px solid #F59E0B'
-    const uid = f.serial || f.ip_address || '—'
-    const diff = f.expected && f.actual ? `${f.actual} → ${f.expected}` : ''
-    const actionBtn = isRes
-      ? `<button class="btn-reo" onclick="setFindingStatus('${f.id}','open')">Reopen</button>`
-      : `<button class="btn-res" onclick="setFindingStatus('${f.id}','resolved')"><i class="ti ti-check" style="font-size:11px;vertical-align:-1px;margin-right:3px" aria-hidden="true"></i>Resolve</button>`
-
-    return `<div id="row-${f.id}" class="trow${isRes?' is-resolved':''}" style="${lb}">
-      <div><span class="sev ${sevCls}">${f.severity==='error'?'Error':'Warning'}</span></div>
-      <div class="rule">${f.rule_id}</div>
-      <div><div class="u-name">${f.unit_name||uid}</div><div class="u-id">${uid}</div></div>
-      <div><div class="c-ob">${f.customer_site||f.customer||''}</div><div class="c-db">${f.db_customer||''}</div></div>
-      <div><div class="i-msg">${f.message}</div>${diff?`<div class="i-diff">${diff}</div>`:''}</div>
-      <div style="text-align:right">${actionBtn}</div>
-    </div>`
-  }).join('')
+  lbl.textContent=visible.length+' unit'+(visible.length!==1?'s':'')+' shown'
+  list.innerHTML=visible.map(u=>renderUnit(u)).join('')
 }
 
-async function setFindingStatus(id, newStatus) {
-  const row = document.getElementById('row-'+id)
-  if (row) row.classList.add('resolving')
+function renderUnit(unit) {
+  const status=getUnitStatus(unit)
+  const findings=getFindingsForUnit(unit)
+  const openF=findings.filter(f=>f.status==='open')
+  const isExp=expanded.has(unit.id)
+  const bcCls=status==='error'?'bc-error':status==='warning'?'bc-warning':'bc-good'
 
-  const update = { status: newStatus, resolved_at: newStatus==='resolved' ? new Date().toISOString() : null }
-  const { error } = await sb.from('hw_findings').update(update).eq('id', id)
+  // Badge
+  const errCt=openF.filter(f=>f.severity==='error').length
+  const warnCt=openF.filter(f=>f.severity==='warning').length
+  let badge='', badgeCls='badge-good', badgeTxt='Good'
+  if(errCt>0 && warnCt>0){ badgeTxt=`${errCt} error${errCt>1?'s':''}, ${warnCt} warning${warnCt>1?'s':''}`; badgeCls='badge-error' }
+  else if(errCt>0){ badgeTxt=`${errCt} error${errCt>1?'s':''}`; badgeCls='badge-error' }
+  else if(warnCt>0){ badgeTxt=`${warnCt} warning${warnCt>1?'s':''}`; badgeCls='badge-warning' }
+  badge=`<span class="badge ${badgeCls}">${badgeTxt}</span>`
 
-  if (error) { alert('Failed to update: ' + error.message); if(row) row.classList.remove('resolving'); return }
+  const chevron=findings.length>0?`<span class="chevron${isExp?' open':''}">›</span>`:''
 
-  const f = ALL.find(x => x.id===id)
-  if (f) { f.status=newStatus; f.resolved_at=update.resolved_at }
+  const findingsHtml=isExp && findings.length>0 ? `<div class="unit-findings">${findings.map(f=>renderFinding(f)).join('')}</div>` : ''
+
+  return `<div class="unit-card" id="uc-${unit.id}">
+    <div class="unit-main" onclick="toggleUnit('${unit.id}')">
+      <div class="unit-color ${bcCls}"></div>
+      <div class="unit-fields">
+        <div class="field"><div class="field-lbl">Model</div><div class="field-val">${unit.model||'—'}</div></div>
+        <div class="field"><div class="field-lbl">IP Address</div><div class="field-val">${unit.ip_address||'—'}</div></div>
+        <div class="field"><div class="field-lbl">Customer</div><div class="field-val">${unit.customer||'—'}</div></div>
+        <div class="field"><div class="field-lbl">Customer Site</div><div class="field-val">${unit.customer_site||'—'}</div></div>
+        <div class="field"><div class="field-lbl">Power</div><div class="field-val">${unit.power||'—'}</div></div>
+      </div>
+      <div class="unit-right">${badge}${chevron}</div>
+    </div>
+    ${findingsHtml}
+  </div>`
+}
+
+function renderFinding(f) {
+  const isRes=f.status==='resolved'
+  const sevCls=f.severity==='error'?'f-sev-error':'f-sev-warn'
+  const sevLbl=f.severity==='error'?'Error':'Warn'
+  const diff=f.expected&&f.actual?`<span class="f-diff">${f.actual} → ${f.expected}</span>`:''
+  const btn=isRes
+    ?`<button class="btn-reo" onclick="event.stopPropagation();setFindingStatus('${f.id}','open')">Reopen</button>`
+    :`<button class="btn-res" onclick="event.stopPropagation();setFindingStatus('${f.id}','resolved')"><i class="ti ti-check" style="font-size:11px;vertical-align:-1px;margin-right:2px" aria-hidden="true"></i>Resolve</button>`
+  return `<div class="finding-item${isRes?' is-resolved':''}" id="fi-${f.id}">
+    <span class="f-sev ${sevCls}">${sevLbl}</span>
+    <span class="f-rule">${f.rule_id}</span>
+    <span class="f-msg">${f.message}</span>
+    ${diff}${btn}
+  </div>`
+}
+
+function toggleUnit(id) {
+  if(expanded.has(id)) expanded.delete(id); else expanded.add(id)
   renderQueue()
 }
 
-// Load queue on start so stats are ready
+async function setFindingStatus(id,newStatus) {
+  const update={status:newStatus,resolved_at:newStatus==='resolved'?new Date().toISOString():null}
+  const {error}=await sb.from('hw_findings').update(update).eq('id',id)
+  if(error){ alert('Failed to update: '+error.message); return }
+  const f=FINDINGS.find(x=>x.id===id)
+  if(f){ f.status=newStatus; f.resolved_at=update.resolved_at }
+  renderQueue()
+}
+
+// Load on start
 loadQueue()
 </script>
 </body>
