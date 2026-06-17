@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PW Hardware Validation — Upload</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#F8FAFC;color:#0F172A;min-height:100vh}
+    a{color:inherit}
+
+    /* Nav */
+    .nav{display:flex;align-items:center;gap:6px;padding:12px 24px;background:#fff;border-bottom:1px solid #E2E8F0;font-size:13px}
+    .nav a{color:#64748B;text-decoration:none}.nav a:hover{color:#0F172A}
+    .nav-sep{color:#CBD5E1}.nav-cur{font-weight:500}
+
+    /* Page */
+    .page{max-width:680px;margin:0 auto;padding:32px 20px}
+    h1{font-size:18px;font-weight:600;margin-bottom:4px}
+    .sub{font-size:13px;color:#64748B;margin-bottom:28px}
+
+    /* Upload zones */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+    .zone{border:1.5px dashed #CBD5E1;border-radius:12px;padding:24px 16px;text-align:center;
+          background:#F8FAFC;cursor:pointer;transition:all 0.15s;user-select:none}
+    .zone:hover{border-color:#94A3B8}
+    .zone.over{border-color:#3B82F6;background:#EFF6FF;border-style:solid}
+    .zone.done{border-color:#10B981;background:#F0FDF4;border-style:solid}
+    .zone i{font-size:28px;color:#94A3B8;display:block;margin-bottom:8px}
+    .zone.done i{color:#10B981}
+    .zone-label{font-size:13px;font-weight:500;margin-bottom:3px}
+    .zone-hint{font-size:11px;color:#94A3B8}
+    .zone-fname{font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
+    .zone-fsize{font-size:11px;color:#94A3B8}
+
+    /* Button */
+    #run-btn{width:100%;padding:10px;font-size:13px;font-weight:500;border-radius:8px;
+             border:0.5px solid #E2E8F0;background:#fff;color:#94A3B8;
+             cursor:not-allowed;margin-bottom:14px;transition:all 0.15s}
+    #run-btn.ready{border-color:#A7F3D0;background:#F0FDF4;color:#059669;cursor:pointer}
+    #run-btn.ready:hover{opacity:.85}
+
+    /* Status cards */
+    .card{border:0.5px solid #E2E8F0;border-radius:12px;padding:16px;background:#fff}
+    .card.c-info{border-color:#BFDBFE}.card.c-ok{border-color:#A7F3D0}.card.c-err{border-color:#FECACA}
+    .card-title{font-size:13px;font-weight:500;margin-bottom:2px}
+    .card-sub{font-size:12px;color:#64748B}
+    .stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+    .stat{background:#F8FAFC;border-radius:8px;padding:10px 12px}
+    .stat-l{font-size:11px;color:#64748B;margin-bottom:3px}
+    .stat-v{font-size:20px;font-weight:500}
+
+    /* Buttons */
+    .btn-ok{display:inline-block;padding:8px 16px;font-size:13px;font-weight:500;border-radius:8px;
+            text-decoration:none;border:0.5px solid #A7F3D0;background:#F0FDF4;color:#059669;cursor:pointer}
+    .btn-ghost{padding:8px 12px;font-size:12px;border-radius:8px;border:0.5px solid #E2E8F0;
+               background:none;color:#64748B;cursor:pointer;margin-left:8px}
+
+    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+    .spin{display:inline-block;animation:spin 1s linear infinite;margin-right:8px}
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html">Supply Planner</a>
+  <span class="nav-sep">/</span>
+  <a href="hw-upload.html">Hardware Validation</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-cur">Upload</span>
+</nav>
+
+<div class="page">
+  <h1>Hardware Validation</h1>
+  <p class="sub">Upload both files to run the weekly validation check</p>
+
+  <div class="grid-2">
+    <div id="z-ob" class="zone"
+         onclick="document.getElementById('inp-ob').click()"
+         ondragover="dov(event,'ob')" ondragleave="dlv('ob')" ondrop="drp(event,'ob')">
+      <div id="inner-ob">
+        <i class="ti ti-file-spreadsheet" aria-hidden="true"></i>
+        <div class="zone-label">Unit Onboarding</div>
+        <div class="zone-hint">.xlsx</div>
+      </div>
+    </div>
+    <input type="file" id="inp-ob" accept=".xlsx,.xls" style="display:none" onchange="pick('ob',this.files[0])">
+
+    <div id="z-hw" class="zone"
+         onclick="document.getElementById('inp-hw').click()"
+         ondragover="dov(event,'hw')" ondragleave="dlv('hw')" ondrop="drp(event,'hw')">
+      <div id="inner-hw">
+        <i class="ti ti-file-text" aria-hidden="true"></i>
+        <div class="zone-label">Hardware Export</div>
+        <div class="zone-hint">.csv</div>
+      </div>
+    </div>
+    <input type="file" id="inp-hw" accept=".csv" style="display:none" onchange="pick('hw',this.files[0])">
+  </div>
+
+  <button id="run-btn" disabled onclick="run()">Run validation</button>
+  <div id="status"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────
+//  CONFIG  — replace both values with your Supabase project details
+//  URL:  Supabase dashboard → Settings → API → Project URL
+//  KEY:  Supabase dashboard → Settings → API → anon / public key
+// ─────────────────────────────────────────────────────────────────
+const SUPABASE_URL      = 'https://YOUR-PROJECT-REF.supabase.co'
+const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'
+// ─────────────────────────────────────────────────────────────────
+
+const { createClient } = supabase
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const F = { ob: null, hw: null }
+const fmt = b => b < 1024 ? b+' B' : b < 1048576 ? Math.round(b/1024)+' KB' : (b/1048576).toFixed(1)+' MB'
+
+function dov(e,t){ e.preventDefault(); document.getElementById('z-'+t).classList.add('over') }
+function dlv(t){ document.getElementById('z-'+t).classList.remove('over') }
+function drp(e,t){ e.preventDefault(); dlv(t); const f=e.dataTransfer.files[0]; if(f) pick(t,f) }
+
+function pick(t, file) {
+  if (!file) return
+  F[t] = file
+  document.getElementById('z-'+t).classList.remove('over')
+  document.getElementById('z-'+t).classList.add('done')
+  document.getElementById('inner-'+t).innerHTML = `
+    <i class="ti ti-check" aria-hidden="true"></i>
+    <div class="zone-fname">${file.name}</div>
+    <div class="zone-fsize">${fmt(file.size)}</div>
+  `
+  if (F.ob && F.hw) {
+    const b = document.getElementById('run-btn')
+    b.disabled = false
+    b.classList.add('ready')
+  }
+}
+
+function setStatus(html) { document.getElementById('status').innerHTML = html }
+
+async function run() {
+  const btn = document.getElementById('run-btn')
+  btn.disabled = true
+  btn.classList.remove('ready')
+
+  try {
+    btn.textContent = 'Creating batch…'
+
+    const { data: batch, error: bErr } = await sb
+      .from('upload_batches').insert({ status: 'pending' }).select().single()
+    if (bErr) throw new Error('Could not create batch: ' + bErr.message)
+
+    setStatus(`<div class="card"><div class="card-title"><span class="spin">↻</span> Uploading files…</div><div class="card-sub">Writing to Supabase Storage</div></div>`)
+
+    const [r1, r2] = await Promise.all([
+      sb.storage.from('validation-uploads').upload(`${batch.id}/onboarding.xlsx`, F.ob),
+      sb.storage.from('validation-uploads').upload(`${batch.id}/hardware_export.csv`, F.hw),
+    ])
+    if (r1.error) throw new Error('Onboarding upload failed: ' + r1.error.message)
+    if (r2.error) throw new Error('Hardware export upload failed: ' + r2.error.message)
+
+    setStatus(`<div class="card c-info"><div class="card-title"><span class="spin">↻</span> Running validation…</div><div class="card-sub">Checking ${F.ob.name} against the hardware export</div></div>`)
+
+    const { data: res, error: fErr } = await sb.functions.invoke('validate-batch', {
+      body: { batch_id: batch.id }
+    })
+    if (fErr) throw new Error('Edge Function error: ' + fErr.message)
+    if (!res?.success) throw new Error(res?.error || 'Validation returned an error')
+
+    setStatus(`
+      <div class="card c-ok">
+        <div class="card-title" style="margin-bottom:12px">✓ Validation complete</div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-l">Errors</div><div class="stat-v" style="color:#EF4444">${res.errors}</div></div>
+          <div class="stat"><div class="stat-l">Warnings</div><div class="stat-v" style="color:#F59E0B">${res.warnings}</div></div>
+          <div class="stat"><div class="stat-l">Total</div><div class="stat-v">${res.findings}</div></div>
+        </div>
+        <a href="hw-queue.html" class="btn-ok">View queue →</a>
+        <button class="btn-ghost" onclick="reset()">Upload another</button>
+      </div>
+    `)
+
+  } catch (err) {
+    setStatus(`
+      <div class="card c-err">
+        <div class="card-title" style="color:#EF4444;margin-bottom:6px">Upload or validation failed</div>
+        <div class="card-sub" style="font-family:monospace;margin-bottom:12px">${err.message}</div>
+        <button class="btn-ghost" onclick="reset()">Try again</button>
+      </div>
+    `)
+    btn.disabled = false
+    btn.classList.add('ready')
+  }
+
+  btn.textContent = 'Run validation'
+}
+
+function reset() {
+  F.ob = null; F.hw = null
+  ;['ob','hw'].forEach(t => {
+    const z = document.getElementById('z-'+t)
+    z.classList.remove('done','over')
+    const icon = t==='ob' ? 'ti-file-spreadsheet' : 'ti-file-text'
+    const label = t==='ob' ? 'Unit Onboarding' : 'Hardware Export'
+    const hint = t==='ob' ? '.xlsx' : '.csv'
+    document.getElementById('inner-'+t).innerHTML = `
+      <i class="ti ${icon}" aria-hidden="true"></i>
+      <div class="zone-label">${label}</div>
+      <div class="zone-hint">${hint}</div>
+    `
+  })
+  setStatus('')
+  const btn = document.getElementById('run-btn')
+  btn.disabled = true; btn.classList.remove('ready'); btn.textContent = 'Run validation'
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PW Hardware Validation — Queue</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#F8FAFC;color:#0F172A;min-height:100vh}
+
+    /* Nav */
+    .nav{display:flex;align-items:center;gap:6px;padding:12px 24px;background:#fff;border-bottom:1px solid #E2E8F0;font-size:13px}
+    .nav a{color:#64748B;text-decoration:none}.nav a:hover{color:#0F172A}
+    .nav-sep{color:#CBD5E1}.nav-cur{font-weight:500}
+    .nav-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+    /* Page */
+    .page{max-width:1060px;margin:0 auto;padding:24px 20px}
+    .page-hd{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+    h1{font-size:18px;font-weight:600;margin-bottom:2px}
+    .sub{font-size:13px;color:#64748B}
+
+    /* Stat cards */
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+    .stat{background:#fff;border:0.5px solid #E2E8F0;border-radius:10px;padding:12px 14px}
+    .stat-l{font-size:12px;color:#64748B;margin-bottom:4px}
+    .stat-v{font-size:22px;font-weight:500}
+
+    /* Filters */
+    .filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+    .fb{padding:5px 12px;font-size:13px;border-radius:6px;border:0.5px solid #E2E8F0;
+        background:#fff;color:#64748B;cursor:pointer;transition:all 0.1s}
+    .fb.on{border-color:#BFDBFE;background:#EFF6FF;color:#1D4ED8;font-weight:500}
+    .fb:hover:not(.on){background:#F8FAFC}
+    .fsep{width:0.5px;height:20px;background:#E2E8F0}
+    select{font-size:13px;padding:5px 8px;border-radius:6px;border:0.5px solid #E2E8F0;background:#fff;color:#0F172A}
+
+    /* Table card */
+    .tcard{background:#fff;border:0.5px solid #E2E8F0;border-radius:12px;overflow:hidden}
+    .thead{display:grid;grid-template-columns:76px 56px minmax(0,150px) minmax(0,180px) minmax(0,1fr) 80px;
+           padding:7px 14px 7px 18px;background:#F8FAFC;border-bottom:0.5px solid #E2E8F0}
+    .th{font-size:11px;font-weight:500;color:#94A3B8;letter-spacing:.03em}
+    .trow{display:grid;grid-template-columns:76px 56px minmax(0,150px) minmax(0,180px) minmax(0,1fr) 80px;
+          padding:10px 14px 10px 16px;align-items:center;border-bottom:0.5px solid #F1F5F9;
+          transition:background 0.2s}
+    .trow:last-child{border-bottom:none}
+    .trow:hover{background:#FAFAFA}
+    .trow.resolving{background:#F0FDF4}
+    .trow.is-resolved{opacity:.5}
+
+    /* Severity badge */
+    .sev{font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;white-space:nowrap}
+    .sev-error{background:#FEF2F2;color:#991B1B}
+    .sev-warning{background:#FFFBEB;color:#92400E}
+
+    /* Rule chip */
+    .rule{font-size:11px;font-weight:500;color:#475569;font-family:monospace}
+
+    /* Unit cell */
+    .u-name{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .u-id{font-size:11px;color:#94A3B8;margin-top:1px}
+
+    /* Customer cell */
+    .c-ob{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .c-db{font-size:11px;color:#94A3B8;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+    /* Issue cell */
+    .i-msg{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .i-diff{font-size:11px;color:#94A3B8;margin-top:2px;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+    /* Action buttons */
+    .btn-res{font-size:12px;font-weight:500;padding:4px 10px;border-radius:6px;
+             border:0.5px solid #A7F3D0;background:#F0FDF4;color:#059669;cursor:pointer}
+    .btn-res:hover{opacity:.8}
+    .btn-reo{font-size:12px;padding:4px 8px;border-radius:6px;border:none;
+             background:none;color:#94A3B8;cursor:pointer}
+    .btn-reo:hover{color:#64748B}
+
+    /* Empty state */
+    .empty{padding:48px 20px;text-align:center}
+    .empty i{font-size:28px;color:#10B981;display:block;margin-bottom:8px}
+    .empty-t{font-size:14px;font-weight:500;margin-bottom:4px}
+    .empty-s{font-size:13px;color:#64748B}
+
+    /* Loading */
+    .loading{padding:48px 20px;text-align:center;font-size:13px;color:#64748B}
+
+    /* Utility */
+    .btn-sm{padding:5px 12px;font-size:13px;border-radius:6px;border:0.5px solid #E2E8F0;background:#fff;color:#64748B;cursor:pointer}
+    .btn-sm:hover{background:#F8FAFC}
+    .count-label{font-size:12px;color:#94A3B8;margin-top:8px;text-align:right}
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html">Supply Planner</a>
+  <span class="nav-sep">/</span>
+  <a href="hw-upload.html">Hardware Validation</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-cur">Queue</span>
+  <div class="nav-right">
+    <button class="btn-sm" onclick="load()"><i class="ti ti-refresh" style="font-size:13px;vertical-align:-1px" aria-hidden="true"></i> Refresh</button>
+    <a href="hw-upload.html" class="btn-sm"><i class="ti ti-upload" style="font-size:13px;vertical-align:-1px" aria-hidden="true"></i> New upload</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-hd">
+    <div>
+      <h1>Hardware Validation Queue</h1>
+      <p class="sub" id="run-date">Loading…</p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-l">Open errors</div><div class="stat-v" id="s-err" style="color:#EF4444">—</div></div>
+    <div class="stat"><div class="stat-l">Open warnings</div><div class="stat-v" id="s-warn" style="color:#F59E0B">—</div></div>
+    <div class="stat"><div class="stat-l">Resolved</div><div class="stat-v" id="s-res" style="color:#10B981">—</div></div>
+  </div>
+
+  <div class="filters">
+    <button class="fb on" id="f-open"     onclick="setFilter('status','open')">Open</button>
+    <button class="fb"    id="f-all"      onclick="setFilter('status','all')">All</button>
+    <button class="fb"    id="f-resolved" onclick="setFilter('status','resolved')">Resolved</button>
+    <div class="fsep"></div>
+    <select id="f-rule" onchange="setFilter('rule',this.value)">
+      <option value="all">All checks</option>
+    </select>
+    <select id="f-sev" onchange="setFilter('sev',this.value)">
+      <option value="all">All severities</option>
+      <option value="error">Errors only</option>
+      <option value="warning">Warnings only</option>
+    </select>
+  </div>
+
+  <div class="tcard">
+    <div class="thead">
+      <span class="th">Severity</span>
+      <span class="th">Rule</span>
+      <span class="th">Unit</span>
+      <span class="th">Customer</span>
+      <span class="th">Issue</span>
+      <span class="th"></span>
+    </div>
+    <div id="tbody"><div class="loading">Loading findings…</div></div>
+  </div>
+  <div id="count-lbl" class="count-label"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────
+//  CONFIG  — replace both values with your Supabase project details
+//  URL:  Supabase dashboard → Settings → API → Project URL
+//  KEY:  Supabase dashboard → Settings → API → anon / public key
+// ─────────────────────────────────────────────────────────────────
+const SUPABASE_URL      = 'https://YOUR-PROJECT-REF.supabase.co'
+const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'
+// ─────────────────────────────────────────────────────────────────
+
+const { createClient } = supabase
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+let ALL = []
+let filters = { status: 'open', rule: 'all', sev: 'all' }
+
+async function load() {
+  document.getElementById('tbody').innerHTML = '<div class="loading">Loading findings…</div>'
+
+  const { data, error } = await sb
+    .from('hw_findings')
+    .select('*')
+    .order('severity')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    document.getElementById('tbody').innerHTML = `<div class="loading" style="color:#EF4444">Failed to load: ${error.message}</div>`
+    return
+  }
+
+  ALL = data || []
+
+  // Populate run date from latest batch
+  if (ALL.length > 0) {
+    const latest = ALL[0].run_date
+    const d = new Date(latest + 'T12:00:00')
+    document.getElementById('run-date').textContent = 'Week of ' + d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' })
+  } else {
+    document.getElementById('run-date').textContent = 'No findings'
+  }
+
+  // Populate rule dropdown
+  const rules = [...new Set(ALL.map(f => f.rule_id))].sort()
+  const sel = document.getElementById('f-rule')
+  sel.innerHTML = '<option value="all">All checks</option>'
+  rules.forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; sel.appendChild(o) })
+
+  render()
+}
+
+function setFilter(key, val) {
+  filters[key] = val
+  if (key === 'status') {
+    ;['open','all','resolved'].forEach(k => {
+      document.getElementById('f-'+k).classList.toggle('on', k === val)
+    })
+  }
+  render()
+}
+
+function render() {
+  const visible = ALL.filter(f => {
+    if (filters.status !== 'all' && f.status !== filters.status) return false
+    if (filters.rule !== 'all' && f.rule_id !== filters.rule) return false
+    if (filters.sev !== 'all' && f.severity !== filters.sev) return false
+    return true
+  })
+
+  // Update stat counts
+  document.getElementById('s-err').textContent  = ALL.filter(f => f.status==='open' && f.severity==='error').length
+  document.getElementById('s-warn').textContent = ALL.filter(f => f.status==='open' && f.severity==='warning').length
+  document.getElementById('s-res').textContent  = ALL.filter(f => f.status==='resolved').length
+
+  const tbody = document.getElementById('tbody')
+  const lbl   = document.getElementById('count-lbl')
+
+  if (!visible.length) {
+    tbody.innerHTML = `
+      <div class="empty">
+        <i class="ti ti-check" aria-hidden="true"></i>
+        <div class="empty-t">Nothing to show</div>
+        <div class="empty-s">${filters.status==='open' ? 'All open exceptions have been resolved.' : 'No findings match the current filters.'}</div>
+      </div>`
+    lbl.textContent = ''
+    return
+  }
+
+  lbl.textContent = visible.length + ' finding' + (visible.length !== 1 ? 's' : '') + ' shown'
+
+  tbody.innerHTML = visible.map((f, i) => {
+    const isRes = f.status === 'resolved'
+    const sevCls = f.severity === 'error' ? 'sev-error' : 'sev-warning'
+    const sevLabel = f.severity === 'error' ? 'Error' : 'Warning'
+    const leftBorder = isRes ? 'border-left:3px solid #E2E8F0' : f.severity==='error' ? 'border-left:3px solid #EF4444' : 'border-left:3px solid #F59E0B'
+    const uid = f.serial || f.ip_address || '—'
+
+    const actionBtn = isRes
+      ? `<button class="btn-reo" onclick="setStatus('${f.id}','open')">Reopen</button>`
+      : `<button class="btn-res" onclick="setStatus('${f.id}','resolved')"><i class="ti ti-check" style="font-size:11px;vertical-align:-1px;margin-right:3px" aria-hidden="true"></i>Resolve</button>`
+
+    const diff = f.expected && f.actual ? `${f.actual} → ${f.expected}` : ''
+
+    return `<div id="row-${f.id}" class="trow${isRes?' is-resolved':''}" style="${leftBorder}">
+      <div><span class="sev ${sevCls}">${sevLabel}</span></div>
+      <div class="rule">${f.rule_id}</div>
+      <div>
+        <div class="u-name">${f.unit_name || uid}</div>
+        <div class="u-id">${uid}</div>
+      </div>
+      <div>
+        <div class="c-ob">${f.customer_site || f.customer || ''}</div>
+        <div class="c-db">${f.db_customer || ''}</div>
+      </div>
+      <div>
+        <div class="i-msg">${f.message}</div>
+        ${diff ? `<div class="i-diff">${diff}</div>` : ''}
+      </div>
+      <div style="text-align:right">${actionBtn}</div>
+    </div>`
+  }).join('')
+}
+
+async function setStatus(id, newStatus) {
+  // Animate row
+  const row = document.getElementById('row-'+id)
+  if (row) row.classList.add('resolving')
+
+  const update = { status: newStatus }
+  if (newStatus === 'resolved') update.resolved_at = new Date().toISOString()
+  if (newStatus === 'open')     update.resolved_at = null
+
+  const { error } = await sb.from('hw_findings').update(update).eq('id', id)
+
+  if (error) {
+    alert('Failed to update: ' + error.message)
+    if (row) row.classList.remove('resolving')
+    return
+  }
+
+  // Update local data and re-render
+  const f = ALL.find(x => x.id === id)
+  if (f) { f.status = newStatus; f.resolved_at = update.resolved_at || null }
+  render()
+}
+
+// Load on page open
+load()
+</script>
+</body>
+</html>
