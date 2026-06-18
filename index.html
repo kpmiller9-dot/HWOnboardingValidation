@@ -137,6 +137,24 @@
     .ip-field{display:flex;align-items:center;gap:5px}
     .copy-btn{padding:2px 4px;border:none;background:none;cursor:pointer;color:#CBD5E1;border-radius:3px;flex-shrink:0;line-height:1}
     .copy-btn:hover{color:#64748B;background:#F1F5F9}
+
+    /* Awaiting power panel */
+    .ap-card{background:#fff;border:0.5px solid #E2E8F0;border-radius:12px;overflow:hidden;margin-bottom:10px}
+    .ap-row{display:flex;align-items:center;gap:0;padding:12px 16px 12px 0}
+    .ap-fields{display:flex;flex:1;gap:0}
+    .ap-right{display:flex;align-items:center;gap:10px;padding-right:4px;flex-shrink:0}
+    .badge-await{background:#FEF3C7;color:#92400E;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px}
+    .badge-now-enabled{background:#F0FDF4;color:#166534;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;border:1px solid #A7F3D0}
+    .btn-await{font-size:12px;font-weight:500;padding:3px 10px;border-radius:5px;flex-shrink:0;
+               border:0.5px solid #FDE68A;background:#FFFBEB;color:#92400E;cursor:pointer}
+    .btn-await:hover{opacity:.8}
+    .btn-close{font-size:12px;font-weight:500;padding:3px 10px;border-radius:5px;flex-shrink:0;
+               border:0.5px solid #A7F3D0;background:#F0FDF4;color:#059669;cursor:pointer}
+    .btn-close:hover{opacity:.8}
+    .ap-date{font-size:11px;color:#94A3B8;flex-shrink:0}
+    .ap-empty{padding:48px 20px;text-align:center}
+    .ap-empty i{font-size:28px;color:#94A3B8;display:block;margin-bottom:8px}
+
     @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
     .spin{display:inline-block;animation:spin 1s linear infinite;margin-right:6px}
   </style>
@@ -159,6 +177,9 @@
     </div>
     <div class="tab" id="tab-queue" onclick="switchTab('queue')">
       <i class="ti ti-list-check" style="font-size:13px;vertical-align:-2px;margin-right:5px" aria-hidden="true"></i>Queue
+    </div>
+    <div class="tab" id="tab-awaiting" onclick="switchTab('awaiting')">
+      <i class="ti ti-plug" style="font-size:13px;vertical-align:-2px;margin-right:5px" aria-hidden="true"></i>Awaiting Power<span id="await-badge" style="display:none;margin-left:6px;font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:#FEF3C7;color:#92400E"></span>
     </div>
   </div>
 </div>
@@ -222,27 +243,39 @@
   </div>
 </div>
 
+<!-- ══ AWAITING POWER PANEL ═══════════════════════════════════════════ -->
+<div id="panel-awaiting" class="panel">
+  <div class="inner-wide">
+    <div style="margin-bottom:18px">
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px">Awaiting Power Connection</div>
+      <div style="font-size:13px;color:#64748B">Units in the database but disabled pending customer power connection. This list persists across uploads until closed out.</div>
+    </div>
+    <div id="ap-list"><div class="loading">Loading…</div></div>
+  </div>
+</div>
+
 <!-- ══ SCRIPT ════════════════════════════════════════════════════════ -->
 <script>
 // ─────────────────────────────────────────────────────────────────
 //  CONFIG
 // ─────────────────────────────────────────────────────────────────
-const SUPABASE_URL      = 'https://kkqzzwwqbduejbluwrol.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrcXp6d3dxYmR1ZWpibHV3cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NTg2NDcsImV4cCI6MjA5NzIzNDY0N30.ABBBZ463WijmzfNFLVOxz7bZ9OGhtpPZjFbPEsbGe6Q'
+const SUPABASE_URL      = 'https://YOUR-PROJECT-REF.supabase.co'
+const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'
 // ─────────────────────────────────────────────────────────────────
 
 const { createClient } = supabase
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 // ── Tab switching ─────────────────────────────────────────────────
-let queueLoaded = false
+let queueLoaded = false, awaitingLoaded = false
 function switchTab(name) {
-  ;['upload','queue'].forEach(t => {
+  ;['upload','queue','awaiting'].forEach(t => {
     document.getElementById('panel-'+t).classList.toggle('active', t===name)
     document.getElementById('tab-'+t).classList.toggle('active', t===name)
   })
   document.getElementById('refresh-btn').style.display = name==='queue' ? 'block' : 'none'
-  if (name==='queue' && !queueLoaded) loadQueue()
+  if (name==='queue'    && !queueLoaded)    loadQueue()
+  if (name==='awaiting' && !awaitingLoaded) loadAwaitingPower()
 }
 
 // ── Upload ────────────────────────────────────────────────────────
@@ -277,7 +310,7 @@ async function runValidation() {
     if(fErr) throw new Error('Edge Function error: '+fErr.message)
     if(!res?.success) throw new Error(res?.error||'Validation returned an error')
     setUS(`<div class="card c-ok"><div class="card-title" style="margin-bottom:12px">✓ Validation complete</div><div class="stat-row"><div class="stat-sm"><div class="sl">Units</div><div class="sv">${res.units}</div></div><div class="stat-sm"><div class="sl">Errors</div><div class="sv" style="color:#EF4444">${res.errors}</div></div><div class="stat-sm"><div class="sl">Warnings</div><div class="sv" style="color:#F59E0B">${res.warnings}</div></div></div><button class="btn-ok" onclick="switchTab('queue');loadQueue()">View queue →</button><button class="btn-ghost" onclick="resetUpload()">Upload another</button></div>`)
-    queueLoaded=false
+    queueLoaded=false; awaitingLoaded=false
   } catch(err) {
     setUS(`<div class="card c-err"><div class="card-title" style="color:#EF4444;margin-bottom:6px">Validation failed</div><div class="card-sub" style="font-family:monospace;margin-bottom:12px">${err.message}</div><button class="btn-ghost" onclick="resetUpload()">Try again</button></div>`)
     btn.disabled=false; btn.classList.add('ready')
@@ -298,7 +331,11 @@ function resetUpload() {
 }
 
 // ── Queue ─────────────────────────────────────────────────────────
-let UNITS=[], FINDINGS=[], qFilter={status:'all',model:'all'}, expanded=new Set()
+let UNITS=[], FINDINGS=[], AWAITING_UNITS=[], qFilter={status:'all',model:'all'}, expanded=new Set()
+
+function getAwaitingIPs() {
+  return new Set(AWAITING_UNITS.filter(u=>u.status==='pending').map(u=>u.ip_address||u.serial).filter(Boolean))
+}
 
 async function loadQueue() {
   document.getElementById('unit-list').innerHTML='<div class="loading">Loading…</div>'
@@ -314,11 +351,18 @@ async function loadQueue() {
   const d=new Date(runDate+'T12:00:00')
   document.getElementById('queue-date').textContent='Week of '+d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
 
-  const [{data:units},{data:findings}]=await Promise.all([
+  const [{data:units},{data:findings},{data:awaitingUnits}]=await Promise.all([
     sb.from('onboarding_units').select('*').eq('batch_id',batchId).order('customer_site'),
-    sb.from('hw_findings').select('*').order('severity')
+    sb.from('hw_findings').select('*').order('severity'),
+    sb.from('awaiting_power_units').select('*').in('status',['pending','enabled'])
   ])
-  UNITS=units||[]; FINDINGS=findings||[]
+  UNITS=units||[]; FINDINGS=findings||[]; AWAITING_UNITS=awaitingUnits||[]
+
+  // Update awaiting tab badge
+  const pendingCt=AWAITING_UNITS.filter(u=>u.status==='pending'||u.status==='enabled').length
+  const badge=document.getElementById('await-badge')
+  if(pendingCt>0){ badge.textContent=pendingCt; badge.style.display='inline' }
+  else badge.style.display='none'
 
   // Populate model filter
   const models=[...new Set(UNITS.map(u=>u.model))].sort()
@@ -359,7 +403,11 @@ function renderQueue() {
     if (sa !== sb) return sa - sb
     return (a.customer_site || '').localeCompare(b.customer_site || '')
   })
+  const awaitingIPs = getAwaitingIPs()
   const visible=sorted.filter(u=>{
+    // Hide units that are pending awaiting power
+    if(u.ip_address && awaitingIPs.has(u.ip_address)) return false
+    if(!u.ip_address && u.serial && awaitingIPs.has(u.serial)) return false
     const st=getUnitStatus(u)
     if(qFilter.status!=='all' && st!==qFilter.status) return false
     if(qFilter.model!=='all' && u.model!==qFilter.model) return false
@@ -402,7 +450,7 @@ function renderUnit(unit) {
 
   const chevron=findings.length>0?`<span class="chevron${isExp?' open':''}">›</span>`:''
 
-  const findingsHtml=isExp && findings.length>0 ? `<div class="unit-findings">${findings.map(f=>renderFinding(f)).join('')}</div>` : ''
+  const findingsHtml=isExp && findings.length>0 ? `<div class="unit-findings">${findings.map(f=>renderFinding(f,unit)).join('')}</div>` : ''
 
   return `<div class="unit-card" id="uc-${unit.id}">
     <div class="unit-main" onclick="toggleUnit('${unit.id}')">
@@ -420,19 +468,23 @@ function renderUnit(unit) {
   </div>`
 }
 
-function renderFinding(f) {
+function renderFinding(f, unit) {
   const isRes=f.status==='resolved'
   const sevCls=f.severity==='error'?'f-sev-error':'f-sev-warn'
   const sevLbl=f.severity==='error'?'Error':'Warn'
   const diff=f.expected&&f.actual?`<span class="f-diff">${f.actual} → ${f.expected}</span>`:''
-  const btn=isRes
+  const resolveBtn=isRes
     ?`<button class="btn-reo" onclick="event.stopPropagation();setFindingStatus('${f.id}','open')">Reopen</button>`
     :`<button class="btn-res" onclick="event.stopPropagation();setFindingStatus('${f.id}','resolved')"><i class="ti ti-check" style="font-size:11px;vertical-align:-1px;margin-right:2px" aria-hidden="true"></i>Resolve</button>`
+  // "Awaiting Power" button only on OB005 (unit not enabled) when not already resolved
+  const awaitBtn=(!isRes && f.rule_id==='OB005' && unit)
+    ?`<button class="btn-await" onclick="event.stopPropagation();markAwaitingPower('${unit.id}')"><i class="ti ti-plug" style="font-size:11px;vertical-align:-1px;margin-right:2px" aria-hidden="true"></i>Awaiting Power</button>`
+    :''
   return `<div class="finding-item${isRes?' is-resolved':''}" id="fi-${f.id}">
     <span class="f-sev ${sevCls}">${sevLbl}</span>
     <span class="f-rule">${f.rule_id}</span>
     <span class="f-msg">${f.message}</span>
-    ${diff}${btn}
+    ${diff}${awaitBtn}${resolveBtn}
   </div>`
 }
 
@@ -462,6 +514,95 @@ async function setFindingStatus(id,newStatus) {
   const f=FINDINGS.find(x=>x.id===id)
   if(f){ f.status=newStatus; f.resolved_at=update.resolved_at }
   renderQueue()
+}
+
+// ── Awaiting Power ────────────────────────────────────────────────
+
+async function markAwaitingPower(unitId) {
+  const unit = UNITS.find(u => u.id === unitId)
+  if (!unit) return
+  const { error } = await sb.from('awaiting_power_units').insert({
+    ip_address:    unit.ip_address,
+    serial:        unit.serial,
+    model:         unit.model,
+    customer:      unit.customer,
+    customer_site: unit.customer_site,
+    power:         unit.power,
+    unit_name:     unit.unit_name,
+  })
+  if (error) { alert('Failed to mark awaiting power: ' + error.message); return }
+  // Add to local array so unit is immediately hidden from queue
+  AWAITING_UNITS.push({ ip_address: unit.ip_address, serial: unit.serial, status: 'pending' })
+  // Update tab badge
+  const pendingCt = AWAITING_UNITS.filter(u=>u.status==='pending'||u.status==='enabled').length
+  const badge = document.getElementById('await-badge')
+  badge.textContent = pendingCt; badge.style.display = 'inline'
+  awaitingLoaded = false
+  renderQueue()
+}
+
+async function loadAwaitingPower() {
+  document.getElementById('ap-list').innerHTML = '<div class="loading">Loading…</div>'
+  awaitingLoaded = true
+  const { data, error } = await sb.from('awaiting_power_units')
+    .select('*').in('status',['pending','enabled']).order('marked_at', { ascending: false })
+  if (error) { document.getElementById('ap-list').innerHTML = `<div class="loading" style="color:#EF4444">Failed to load: ${error.message}</div>`; return }
+  AWAITING_UNITS = data || []
+  renderAwaitingPower()
+}
+
+function renderAwaitingPower() {
+  const list = document.getElementById('ap-list')
+  const active = AWAITING_UNITS.filter(u => u.status !== 'closed')
+  if (!active.length) {
+    list.innerHTML = `<div class="ap-empty"><i class="ti ti-plug-off" aria-hidden="true"></i><div style="font-size:14px;font-weight:500;margin-bottom:4px">No units awaiting power</div><div style="font-size:13px;color:#64748B">Mark units from the Queue tab when a customer hasn't connected power yet</div></div>`
+    return
+  }
+  list.innerHTML = active.map(u => {
+    const isEnabled = u.status === 'enabled'
+    const leftColor = isEnabled ? '#10B981' : '#94A3B8'
+    const badge = isEnabled
+      ? `<span class="badge-now-enabled">⚡ Now Enabled</span>`
+      : `<span class="badge-await">Awaiting Power</span>`
+    const markedDate = new Date(u.marked_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+    const enabledNote = isEnabled
+      ? `<div style="font-size:11px;color:#059669;margin-top:2px">Became enabled — ready to close out</div>` : ''
+    return `<div class="ap-card">
+      <div class="ap-row">
+        <div style="width:3px;min-width:3px;align-self:stretch;background:${leftColor};border-radius:0"></div>
+        <div class="ap-fields">
+          <div class="field"><div class="field-lbl">Model</div><div class="field-val">${u.model||'—'}</div></div>
+          <div class="field"><div class="field-lbl">IP Address</div><div class="field-val ip-field"><span>${u.ip_address||'—'}</span>${u.ip_address?`<button class="copy-btn" onclick="copyIP('${u.ip_address}',this)" title="Copy IP"><i class="ti ti-copy" style="font-size:12px" aria-hidden="true"></i></button>`:''}</div></div>
+          <div class="field"><div class="field-lbl">Customer</div><div class="field-val">${u.customer||'—'}</div></div>
+          <div class="field"><div class="field-lbl">Customer Site</div><div class="field-val">${u.customer_site||'—'}</div></div>
+          <div class="field"><div class="field-lbl">Power</div><div class="field-val">${u.power||'—'}${enabledNote}</div></div>
+        </div>
+        <div class="ap-right">
+          ${badge}
+          <span class="ap-date">Since ${markedDate}</span>
+          <button class="btn-close" onclick="closeOutUnit('${u.id}')"><i class="ti ti-check" style="font-size:11px;vertical-align:-1px;margin-right:2px" aria-hidden="true"></i>Close out</button>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+async function closeOutUnit(id) {
+  const { error } = await sb.from('awaiting_power_units')
+    .update({ status:'closed', closed_at: new Date().toISOString() }).eq('id', id)
+  if (error) { alert('Failed: ' + error.message); return }
+  // Remove from local array
+  const idx = AWAITING_UNITS.findIndex(u => u.id === id)
+  if (idx > -1) AWAITING_UNITS.splice(idx, 1)
+  // Update tab badge
+  const pendingCt = AWAITING_UNITS.filter(u=>u.status==='pending'||u.status==='enabled').length
+  const badge = document.getElementById('await-badge')
+  if (pendingCt > 0) { badge.textContent = pendingCt; badge.style.display = 'inline' }
+  else badge.style.display = 'none'
+  // Refresh queue in case unit should reappear
+  queueLoaded = false
+  renderAwaitingPower()
+  loadQueue()
 }
 
 // Load on start
