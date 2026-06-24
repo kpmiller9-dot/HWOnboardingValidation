@@ -507,13 +507,50 @@ async function copyIP(ip, btn) {
   }
 }
 
-async function setFindingStatus(id,newStatus) {
-  const update={status:newStatus,resolved_at:newStatus==='resolved'?new Date().toISOString():null}
-  const {error}=await sb.from('hw_findings').update(update).eq('id',id)
-  if(error){ alert('Failed to update: '+error.message); return }
-  const f=FINDINGS.find(x=>x.id===id)
-  if(f){ f.status=newStatus; f.resolved_at=update.resolved_at }
-  renderQueue()
+async function setFindingStatus(id, newStatus) {
+  const update = { status: newStatus, resolved_at: newStatus === 'resolved' ? new Date().toISOString() : null }
+  const { error } = await sb.from('hw_findings').update(update).eq('id', id)
+  if (error) { alert('Failed to update: ' + error.message); return }
+  
+  // Update local state
+  const f = FINDINGS.find(x => x.id === id)
+  if (f) { f.status = newStatus; f.resolved_at = update.resolved_at }
+
+  // Find which unit this finding belongs to
+  const unit = UNITS.find(u =>
+    (u.ip_address && f.ip_address && u.ip_address === f.ip_address) ||
+    (u.serial && f.serial && u.serial === f.serial)
+  )
+  if (!unit) { renderQueue(); return }
+
+  // Re-render just the finding item in place
+  const fiEl = document.getElementById('fi-' + id)
+  if (fiEl) fiEl.outerHTML = renderFinding(f, unit)
+
+  // Re-render just the unit header (badge count changes)
+  const ucEl = document.getElementById('uc-' + unit.id)
+  if (ucEl) {
+    const status = getUnitStatus(unit)
+    const bcCls = status === 'error' ? 'bc-error' : status === 'warning' ? 'bc-warning' : 'bc-good'
+    const colorEl = ucEl.querySelector('.unit-color')
+    if (colorEl) colorEl.className = 'unit-color ' + bcCls
+
+    const findings = getFindingsForUnit(unit)
+    const openF = findings.filter(f => f.status === 'open')
+    const errCt = openF.filter(f => f.severity === 'error').length
+    const warnCt = openF.filter(f => f.severity === 'warning').length
+    let badgeCls = 'badge-good', badgeTxt = 'Good'
+    if (errCt > 0 && warnCt > 0) { badgeTxt = `${errCt} error${errCt > 1 ? 's' : ''}, ${warnCt} warning${warnCt > 1 ? 's' : ''}`; badgeCls = 'badge-error' }
+    else if (errCt > 0) { badgeTxt = `${errCt} error${errCt > 1 ? 's' : ''}`; badgeCls = 'badge-error' }
+    else if (warnCt > 0) { badgeTxt = `${warnCt} warning${warnCt > 1 ? 's' : ''}`; badgeCls = 'badge-warning' }
+    const badgeEl = ucEl.querySelector('.badge')
+    if (badgeEl) { badgeEl.className = 'badge ' + badgeCls; badgeEl.textContent = badgeTxt }
+  }
+
+  // Update stats counters
+  document.getElementById('s-err').textContent = UNITS.filter(u => getUnitStatus(u) === 'error').length
+  document.getElementById('s-warn').textContent = UNITS.filter(u => getUnitStatus(u) === 'warning').length
+  document.getElementById('s-good').textContent = UNITS.filter(u => getUnitStatus(u) === 'good').length
 }
 
 // ── Awaiting Power ────────────────────────────────────────────────
